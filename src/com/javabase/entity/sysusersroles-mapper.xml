@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="sysusersroles" > 
+<!-- Result Map-->
+	<!-- 使用时,放开.-->
+	<!-- 以下与实体类的中字段一致 -->
+	<sql id="select_columns">
+		sys_user_id as sysUserId,
+	    role_id as roleId,
+	    app_id as appId,
+	    channel_id as channelId,
+	    shop_id as shopId
+	</sql>
+   
+   
+    <!-- 查询条件罗列 One -->
+    <sql id="select_where_for_one">
+        <where> 
+          1=1  
+          <if test="roleId != null  and roleId !=-1  and roleId >0  ">
+             and role_id=#{roleId} 
+          </if>
+          <if test="appId != null  and appId != '' ">
+             and app_id=#{appId} 
+          </if>
+          <if test="channelId != null  and channelId != '' ">
+             and channel_id=#{channelId} 
+          </if>
+          <if test="shopId != null  and shopId != '' ">
+             and shop_id=#{shopId} 
+          </if>
+        </where> 
+    </sql>
+   
+     <!-- 查询条件罗列 List-->
+    <sql id="select_where_for_list">
+        <where> 
+          1=1  
+          <if test="t.roleId != null  and t.roleId !=-1  and t.roleId >0  ">
+             and role_id=#{t.roleId} 
+          </if>
+          <if test="t.appId != null  and t.appId != '' ">
+             and app_id=#{t.appId} 
+          </if>
+          <if test="t.channelId != null  and t.channelId != '' ">
+             and channel_id=#{t.channelId} 
+          </if>
+          <if test="t.shopId != null  and t.shopId != '' ">
+             and shop_id=#{t.shopId} 
+          </if>
+        </where> 
+    </sql>
+   
+   
+	<!-- 根据ID查询(使用时候可能要变化) -->
+	<select id="findById" resultType="SysUsersRoles" parameterType="String">
+		select <include refid="select_columns" /> 
+    	 from sys_users_roles where sys_user_id = #{sysUserId}
+	</select>
+	
+    <!-- 通过属性找对象. -->
+    <select id="findByProps" resultType="SysUsersRoles" parameterType="SysUsersRoles">
+        select  
+        <include refid="select_columns" />  
+        from sys_users_roles  
+        <include refid="select_where_for_one" />  
+    </select>
+       
+       
+    <!-- 查询条件 -->
+    <select id="find" resultType="SysUsersRoles" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  sys_users_roles  
+        <include refid="select_where_for_list"/>      
+    </select>
+       
+       
+   <!-- 查找所有 -->
+   	<select id="findAll" resultType="SysUsersRoles" >
+		select  
+		<include refid="select_columns" />  
+		from  sys_users_roles 
+	</select>
+        
+   <!-- 查找所有 -->
+    <select id="findAllByPros" resultType="SysUsersRoles" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  sys_users_roles 
+        <include refid="select_where_for_list"/>     
+    </select>
+   
+	<!-- 插入一个记录 -->
+	<insert id="addOne" parameterType="SysUsersRoles" >
+      	insert into sys_users_roles (role_id,app_id,channel_id,shop_id)
+	     values  
+	     (
+	        #{roleId},#{appId},#{channelId},#{shopId}
+	     )
+	</insert>
+	
+	
+	<!-- 插入所有记录 -->
+    <insert id="addAll" parameterType="java.util.List" >
+         insert into sys_users_roles (role_id,app_id,channel_id,shop_id)
+	     values  
+	    <foreach collection="list" item="item" index="index" separator=",">
+	      ( 
+	         #{item.roleId},#{item.appId},#{item.channelId},#{item.shopId}
+	      )
+	    </foreach>
+    </insert>
+ 
+ 
+	<!-- 根据主键修改 -->
+	<update id="updateOne" parameterType="SysUsersRoles" >
+		update sys_users_roles 
+    	<set>
+        	<if test="roleId != null  and roleId !=-1  and roleId >0  ">
+		      role_id=#{roleId}, 
+        	</if>
+        	<if test="appId != null  and appId != '' ">
+		      app_id=#{appId}, 
+        	</if>
+        	<if test="channelId != null  and channelId != '' ">
+		      channel_id=#{channelId}, 
+        	</if>
+        	<if test="shopId != null  and shopId != '' ">
+		      shop_id=#{shopId} 
+        	</if>
+    	</set> 
+	    where sys_user_id = #{sysUserId}
+	</update>
+	
+	
+	<!-- 修改某个属性 updateCloumn 为要修改的列 -->  
+	 <update id="updateAll" parameterType="java.util.HashMap" >
+	  	update sys_users_roles set  updateCloumn = #{updateCloumn} 
+	    where sys_user_id in 
+	    <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	      #{item}
+	    </foreach>
+	 </update>
+
+
+	<!-- 删除记录 -->
+	<delete id="deleteById" parameterType="String">
+		delete from sys_users_roles where sys_user_id = #{sysUserId}
+	</delete>
+	
+	
+	<!-- 删除记录 -->
+	<delete id="deleteAll" parameterType="java.util.List" >
+		delete from sys_users_roles where sys_user_id in 
+	   <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	     #{item}
+	   </foreach>
+	</delete>
+ 
+ 
+	<!-- sys_users_roles 列表总数-->
+	<select id="getObjsCount" resultType="java.lang.Integer">
+		select count(1) from sys_users_roles 
+	</select>
+	
+	
+	<!-- sys_users_roles 列表总数-->
+    <select id="getObjsByProsCount" resultType="java.lang.Integer"  parameterType="SysUsersRoles">
+        select count(1) from sys_users_roles 
+        <include refid="select_where_for_one"/>
+    </select>
+	  
+	  	
+</mapper>   

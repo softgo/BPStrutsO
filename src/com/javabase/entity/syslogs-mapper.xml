@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="syslogs" > 
+<!-- Result Map-->
+	<!-- 使用时,放开.-->
+	<!-- 以下与实体类的中字段一致 -->
+	<sql id="select_columns">
+	log_id as logId,
+    sys_user_id as sysUserId,
+    sys_user_name as sysUserName,
+    module as module,
+    action as action,
+    user_ip as userIp,
+    operator_time as operatorTime,
+    log_status as logStatus
+	</sql>
+   
+    <!-- 查询条件罗列 One -->
+    <sql id="select_where_for_one">
+        <where> 
+          1=1  
+          <if test="sysUserId != null  and sysUserId != '' ">
+             and sys_user_id=#{sysUserId} 
+          </if>
+          <if test="sysUserName != null  and sysUserName != '' ">
+             and sys_user_name=#{sysUserName} 
+          </if>
+          <if test="module != null  and module != '' ">
+             and module=#{module} 
+          </if>
+          <if test="action != null  and action != '' ">
+             and action=#{action} 
+          </if>
+          <if test="userIp != null  and userIp != '' ">
+             and user_ip=#{userIp} 
+          </if>
+          <if test="operatorTime != null  ">
+             and operator_time=#{operatorTime} 
+          </if>
+          <if test="logStatus != null  and logStatus !=-1 ">
+             and log_status=#{logStatus} 
+          </if>
+        </where> 
+    </sql>
+   
+     <!-- 查询条件罗列 List-->
+    <sql id="select_where_for_list">
+        <where> 
+          1=1  
+          <if test="t.sysUserId != null  and t.sysUserId != '' ">
+             and sys_user_id=#{t.sysUserId} 
+          </if>
+          <if test="t.sysUserName != null  and t.sysUserName != '' ">
+             and sys_user_name=#{t.sysUserName} 
+          </if>
+          <if test="t.module != null  and t.module != '' ">
+             and module=#{t.module} 
+          </if>
+          <if test="t.action != null  and t.action != '' ">
+             and action=#{t.action} 
+          </if>
+          <if test="t.userIp != null  and t.userIp != '' ">
+             and user_ip=#{t.userIp} 
+          </if>
+          <if test="t.operatorTime != null  ">
+             and operator_time=#{t.operatorTime} 
+          </if>
+          <if test="t.logStatus != null  and t.logStatus !=-1  and t.logStatus >0  ">
+             and log_status=#{t.logStatus} 
+          </if>
+        </where> 
+    </sql>
+   
+   
+       <!-- 查询条件 -->
+    <select id="find" resultType="SysLogs" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  sys_logs  
+       <where>
+          1=1 
+            <if test="t.sysUserName != null and t.sysUserName != ''">
+                and sys_user_name like '%${t.sysUserName}%'
+            </if>
+            <if test="t.module != null and t.module != ''">
+                and module like '%${t.module}%'
+            </if>
+        </where>
+    </select>
+       
+   <!-- 查找所有 -->
+    <select id="findAll" resultType="SysLogs" >
+        select  
+        <include refid="select_columns" />
+        from  sys_logs
+    </select>
+            
+    <!-- 插入一个记录 -->
+    <insert id="addOne" parameterType="SysLogs" >
+        insert into sys_logs (sys_user_id,sys_user_name,module,action,user_ip,operator_time,log_status)
+         values 
+         (
+            #{sysUserId},#{sysUserName},#{module},#{action},#{userIp},now(),#{logStatus}
+         )
+    </insert>
+   
+    <!-- 删除记录 -->
+    <delete id="deleteById" parameterType="String">
+        delete from sys_logs where log_id = #{logId}
+    </delete>
+    
+    <!-- 根据ID查询(使用时候可能要变化) -->
+    <select id="findById" resultType="SysLogs" parameterType="String">
+        select <include refid="select_columns" /> 
+         from sys_logs where log_id = #{logId}
+    </select>
+        
+    <!-- 根据主键修改 -->
+    <update id="updateOne" parameterType="SysLogs" >
+        update sys_logs 
+        <set>
+            <if test="sysUserId != null  and sysUserId != '' ">
+              sys_user_id=#{sysUserId}, 
+            </if>
+            <if test="sysUserName != null  and sysUserName != '' ">
+              sys_user_name=#{sysUserName}, 
+            </if>
+            <if test="module != null  and module != '' ">
+              module=#{module}, 
+            </if>
+            <if test="action != null  and action != '' ">
+              action=#{action}, 
+            </if>
+            <if test="userIp != null  and userIp != '' ">
+              user_ip=#{userIp}, 
+            </if>
+            <if test="operatorTime != null  ">
+              operator_time= now() , 
+            </if>
+            <if test="logStatus != null  and logStatus !=-1  and logStatus >0  ">
+              log_status=#{logStatus} 
+            </if>
+        </set> 
+        where log_id = #{logId}
+    </update>
+
+
+	
+	<!-- 通过字段名字查询(使用时候,where中的字段-=columnName=-要自己改变.) -->
+    <select id="findByName" resultType="SysLogs" parameterType="String">
+        select  
+        <include refid="select_columns" />  
+        from  sys_logs  where columnName = #{columnName}  
+    </select>
+
+
+    <!-- 通过属性找对象. -->
+    <select id="findByProps" resultType="SysLogs" parameterType="SysLogs">
+        select  
+        <include refid="select_columns" />  
+        from sys_logs  
+        <include refid="select_where_for_one" />  
+    </select>
+       
+   <!-- 查找所有 -->
+    <select id="findAllByPros" resultType="SysLogs" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  sys_logs  
+        <include refid="select_where_for_list"/>      
+    </select> 
+	
+	<!-- 插入所有记录 -->
+    <insert id="addAll" parameterType="java.util.List" >
+         insert into sys_logs (sys_user_id,sys_user_name,module,action,user_ip,operator_time,log_status)
+	     values 
+	    <foreach collection="list" item="item" index="index" separator=",">
+	      ( 
+	         #{item.sysUserId},#{item.sysUserName},#{item.module},#{item.action},#{item.userIp},#{item.operatorTime},#{item.logStatus}
+	      )
+	    </foreach>
+    </insert>
+ 
+	<!-- 修改某个属性 updateCloumn 为要修改的列 -->  
+	 <update id="updateAll" parameterType="java.util.HashMap" >
+	  	update sys_logs set  updateCloumn = #{updateCloumn} 
+	    where log_id in 
+	    <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	      #{item}
+	    </foreach>
+	 </update>
+
+	<!-- 删除记录 -->
+	<delete id="deleteAll" parameterType="java.util.List" >
+		delete from sys_logs where log_id in 
+	   <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	     #{item}
+	   </foreach>
+	</delete>
+ 
+ 
+	<!-- sys_logs 列表总数-->
+	<select id="getObjsCount" resultType="java.lang.Integer">
+		select count(1) from sys_logs 
+	</select>
+	
+	
+	<!-- sys_logs 列表总数-->
+    <select id="getObjsByProsCount" resultType="java.lang.Integer"  parameterType="SysLogs">
+        select count(1) from sys_logs 
+        <include refid="select_where_for_one"/>
+    </select>
+	  
+	  	
+</mapper>   

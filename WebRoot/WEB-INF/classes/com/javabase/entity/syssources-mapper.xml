@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="syssources" > 
+<!-- Result Map-->
+	<!-- 使用时,放开.-->
+	<!-- 以下与实体类的中字段一致 -->
+	<sql id="select_columns">
+		source_id as sourceId,
+	    source_name as sourceName,
+	    parent_id as parentId,
+	     (select r.source_name from sys_sources r where r.source_id = sys_sources.parent_id ) parentName,
+	    source_key as sourceKey,
+	    source_type as sourceType,
+	    source_url as sourceUrl,
+	    source_level as sourceLevel,
+	    description as description,
+        source_status as sourceStatus,
+        is_iframe as isIframe
+	</sql>
+   
+       <!-- 查询条件罗列 One -->
+    <sql id="select_where_for_one">
+        <where> 
+          1=1  
+          <if test="sourceName != null  and sourceName != '' ">
+             and source_name=#{sourceName} 
+          </if>
+          <if test="parentId != null  and parentId !=-1 ">
+             and parent_id=#{parentId} 
+          </if>
+          <if test="sourceKey != null  and sourceKey != '' ">
+             and source_key=#{sourceKey} 
+          </if>
+          <if test="sourceType != null  and sourceType != '' ">
+             and source_type=#{sourceType} 
+          </if>
+          <if test="sourceUrl != null  and sourceUrl != '' ">
+             and source_url=#{sourceUrl} 
+          </if>
+          <if test="sourceLevel != null  and sourceLevel !=-1 ">
+             and source_level=#{sourceLevel} 
+          </if>
+          <if test="description != null  and description != '' ">
+             and description=#{description} 
+          </if>
+          <if test="sourceStatus != null  and sourceStatus !=-1 ">
+             and source_status=#{sourceStatus} 
+          </if>
+        </where> 
+    </sql>
+   
+     <!-- 查询条件罗列 List-->
+    <sql id="select_where_for_list">
+        <where> 
+          1=1  
+          <if test="t.sourceName != null  and t.sourceName != '' ">
+             and source_name=#{t.sourceName} 
+          </if>
+          <if test="t.parentId != null  and t.parentId !=-1 ">
+             and parent_id=#{t.parentId} 
+          </if>
+          <if test="t.sourceKey != null  and t.sourceKey != '' ">
+             and source_key=#{t.sourceKey} 
+          </if>
+          <if test="t.sourceType != null  and t.sourceType != '' ">
+             and source_type=#{t.sourceType} 
+          </if>
+          <if test="t.sourceUrl != null  and t.sourceUrl != '' ">
+             and source_url=#{t.sourceUrl} 
+          </if>
+          <if test="t.sourceLevel != null  and t.sourceLevel !=-1 ">
+             and source_level=#{t.sourceLevel} 
+          </if>
+          <if test="t.description != null  and t.description != '' ">
+             and description=#{t.description} 
+          </if>
+          <if test="t.sourceStatus != null  and t.sourceStatus !=-1 ">
+             and source_status=#{t.sourceStatus} 
+          </if>
+        </where> 
+    </sql>
+   
+   
+      <!-- 查找所有 -->
+    <select id="findAll" resultType="SysSources">
+        select  
+        <include refid="select_columns" />  
+        from  sys_sources  order by source_level asc
+    </select>
+   
+    <!-- 通过属性找对象. -->
+    <select id="findByProps" resultType="SysSources" parameterType="SysSources">
+        select  
+        <include refid="select_columns" />  
+        from sys_sources  
+        <include refid="select_where_for_one" />  
+    </select>   
+       
+    <!-- 查询条件 -->
+    <select id="find" resultType="SysSources" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  sys_sources  
+        <where>
+            <if test="t.sourceName != null and t.sourceName != ''">
+                source_name like '%${t.sourceName}%' 
+            </if>
+        </where>        
+         order by source_level asc      
+    </select>   
+   
+    <!-- sys_sources 列表总数-->
+    <select id="getObjsCount" resultType="java.lang.Integer">
+        select count(1) from sys_sources 
+    </select>
+    
+    <!-- sys_sources 列表总数-->
+    <select id="getObjsByProsCount" resultType="java.lang.Integer"  parameterType="SysSources">
+        select count(1) from sys_sources 
+        <include refid="select_where_for_one"/>
+    </select>
+         
+       
+    <!-- 根据用户Id获取该用户的权限-->
+    <select id="getUserSysSources" parameterType="String" resultType="SysSources">
+        select  
+        <include refid="select_columns" />
+        from sys_sources where source_id in (
+            select source_id from
+            sys_sources_roles where role_id in (
+            select role_id from sys_users_roles
+            where sys_user_id=#{sysUserId})
+        )
+    </select>
+   
+    <!-- 根据角色Id获取该角色的权限-->
+    <select id="getSysSourcesRoles" parameterType="String" resultType="SysSources">
+        select  
+        <include refid="select_columns" />
+        from sys_sources where source_id in (
+            select source_id from 
+            sys_sources_roles where role_id=#{roleId}
+        )
+    </select>
+    
+    <!-- 弃用,不需要这么麻烦 -->
+    <!--
+    <select id="getSysSourcesRoles" parameterType="String" resultType="SysSources">
+        select  
+        <include refid="select_columns" />
+        from sys_sources where source_id in (
+            select source_id from
+            sys_sources_roles where role_id in (
+            select role_id from sys_users_roles
+            where role_id=#{roleId})
+        )
+    </select>
+    -->
+   
+    <!-- 根据用户名获取该用户的权限-->
+    <select id="getSysSourcesByUserName" parameterType="String" resultType="SysSources">
+        select  
+        <include refid="select_columns" />
+        from sys_sources where source_id in (
+            select source_id from
+            sys_sources_roles where role_id in (
+            select role_id from sys_users_roles sur,sys_users su
+            where sur.sys_user_id=su.sys_user_id and su.sys_user_name=#{username})
+        )
+    </select>
+   
+    <!-- 插入一个记录 -->
+    <insert id="addOne" parameterType="SysSources" >
+        insert into sys_sources (source_name,parent_id,source_key,source_type,source_url,source_level,description)
+         values
+         (
+            #{sourceName},#{parentId},#{sourceKey},#{sourceType},#{sourceUrl},#{sourceLevel},#{description}
+         )
+    </insert>
+   
+    <!-- 删除记录 -->
+    <delete id="deleteById" parameterType="String">
+        delete from sys_sources where source_id = #{sourceId}
+    </delete>
+    
+    <!-- 根据ID查询(使用时候可能要变化) -->
+    <select id="findById" resultType="SysSources" parameterType="String">
+        select <include refid="select_columns" /> 
+         from sys_sources where source_id = #{sourceId}
+    </select>
+    
+    <!-- 根据主键修改 -->
+    <update id="updateOne" parameterType="SysSources" >
+        update sys_sources 
+        <set>
+            <if test="sourceName != null  and sourceName != '' ">
+              source_name=#{sourceName}, 
+            </if>
+            <if test="parentId != null  and parentId !=-1 ">
+              parent_id=#{parentId}, 
+            </if>
+            <if test="sourceKey != null  and sourceKey != '' ">
+              source_key=#{sourceKey}, 
+            </if>
+            <if test="sourceType != null  and sourceType != '' ">
+              source_type=#{sourceType}, 
+            </if>
+            <if test="sourceUrl != null  and sourceUrl != '' ">
+              source_url=#{sourceUrl}, 
+            </if>
+            <if test="sourceLevel != null  and sourceLevel !=-1 ">
+              source_level=#{sourceLevel}, 
+            </if>
+            <if test="description != null  and description != '' ">
+              description=#{description}, 
+            </if>
+            <if test="sourceStatus != null  and sourceStatus !=-1 ">
+              source_status=#{sourceStatus} 
+            </if>
+        </set> 
+        where source_id = #{sourceId}
+    </update>
+        
+    <!-- 增加角色和权限 -->
+    <insert id="saveSysSourcesRoles" parameterType="SysSourcesRoles">
+        insert into sys_sources_roles (source_id,role_id) values (#{sourceId},#{roleId})
+    </insert>
+    
+    <delete id="deleteSysSourcesRoles" parameterType="String">
+        delete from sys_sources_roles where role_id=#{roleId}
+    </delete>
+   
+	<!-- 通过字段名字查询(使用时候,where中的字段-=columnName=-要自己改变.) -->
+    <select id="findByName" resultType="SysSources" parameterType="String">
+        select  
+        <include refid="select_columns" />  
+        from  sys_sources  where columnName = #{columnName}  
+    </select>
+
+
+   <!-- 查找所有 -->
+    <select id="findAllByPros" resultType="SysSources" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  sys_sources  
+        <include refid="select_where_for_list"/>
+    </select>
+    
+	<!-- 插入所有记录 -->
+    <insert id="addAll" parameterType="java.util.List" >
+         insert into sys_sources (source_name,parent_id,source_key,source_type,source_url,source_level,description)
+	     values
+	    <foreach collection="list" item="item" index="index" separator=",">
+	      ( 
+	         #{item.sourceName},#{item.parentId},#{item.sourceKey},#{item.sourceType},#{item.sourceUrl},#{item.sourceLevel},#{item.description}
+	      )
+	    </foreach>
+    </insert>
+ 
+	<!-- 修改某个属性 updateCloumn 为要修改的列 -->  
+	 <update id="updateAll" parameterType="java.util.HashMap" >
+	  	update sys_sources set  updateCloumn = #{updateCloumn} 
+	    where source_id in 
+	    <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	      #{item}
+	    </foreach>
+	 </update>
+
+	<!-- 删除记录 -->
+	<delete id="deleteAll" parameterType="java.util.List" >
+		delete from sys_sources where source_id in 
+	   <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	     #{item}
+	   </foreach>
+	</delete>
+	  	
+</mapper>   

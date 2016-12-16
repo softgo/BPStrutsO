@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="sysusers" > 
+<!-- Result Map-->
+
+	<!-- 使用时,放开.-->
+	<!-- 以下与实体类的中字段一致 -->
+	<sql id="select_columns">
+		 sys_user_id as sysUserId,
+		 parent_id as parentId,
+		 sys_user_name as sysUserName,
+		 (select sr.role_name from sys_roles sr where sr.role_id in (select sur.role_id from sys_users_roles sur where sur.sys_user_id=su.sys_user_id)) roleName,
+		 sys_user_pass as sysUserPass,
+		 sys_user_sex as sysUserSex,
+		 sys_user_address as sysUserAddress,
+		 sys_user_phone as sysUserPhone,
+		 sys_user_mail as sysUserMail,
+		 sys_user_qq as sysUserQq,
+		 register_time as registerTime,
+		 sys_status as sysStatus
+	</sql>
+   
+  <!-- 查询条件罗列 One -->
+    <sql id="select_where_for_one">
+        <where> 
+          1=1  
+          <if test="parentId != null  and parentId !=-1 ">
+             and parent_id=#{parentId} 
+          </if>
+          <if test="sysUserName != null  and sysUserName != '' ">
+             and sys_user_name=#{sysUserName} 
+          </if>
+          <if test="sysUserPass != null  and sysUserPass != '' ">
+             and sys_user_pass=#{sysUserPass} 
+          </if>
+          <if test="sysUserSex != null  and sysUserSex !=-1 ">
+             and sys_user_sex=#{sysUserSex} 
+          </if>
+          <if test="sysUserAddress != null  and sysUserAddress != '' ">
+             and sys_user_address=#{sysUserAddress} 
+          </if>
+          <if test="sysUserPhone != null  and sysUserPhone != '' ">
+             and sys_user_phone=#{sysUserPhone} 
+          </if>
+          <if test="sysUserMail != null  and sysUserMail != '' ">
+             and sys_user_mail=#{sysUserMail} 
+          </if>
+          <if test="sysUserQq != null  and sysUserQq != '' ">
+             and sys_user_qq=#{sysUserQq} 
+          </if>
+          <if test="registerTime != null  ">
+             and register_time=#{registerTime} 
+          </if>
+          <if test="sysStatus != null  and sysStatus !=-1 ">
+             and sys_status=#{sysStatus} 
+          </if>
+        </where> 
+    </sql>
+   
+     <!-- 查询条件罗列 List-->
+    <sql id="select_where_for_list">
+        <where> 
+          1=1  
+          <if test="t.parentId != null  and t.parentId !=-1 ">
+             and parent_id=#{t.parentId} 
+          </if>
+          <if test="t.sysUserName != null  and t.sysUserName != '' ">
+             and sys_user_name=#{t.sysUserName} 
+          </if>
+          <if test="t.sysUserPass != null  and t.sysUserPass != '' ">
+             and sys_user_pass=#{t.sysUserPass} 
+          </if>
+          <if test="t.sysUserSex != null  and t.sysUserSex !=-1 ">
+             and sys_user_sex=#{t.sysUserSex} 
+          </if>
+          <if test="t.sysUserAddress != null  and t.sysUserAddress != '' ">
+             and sys_user_address=#{t.sysUserAddress} 
+          </if>
+          <if test="t.sysUserPhone != null  and t.sysUserPhone != '' ">
+             and sys_user_phone=#{t.sysUserPhone} 
+          </if>
+          <if test="t.sysUserMail != null  and t.sysUserMail != '' ">
+             and sys_user_mail=#{t.sysUserMail} 
+          </if>
+          <if test="t.sysUserQq != null  and t.sysUserQq != '' ">
+             and sys_user_qq=#{t.sysUserQq} 
+          </if>
+          <if test="t.registerTime != null  ">
+             and register_time=#{t.registerTime} 
+          </if>
+          <if test="t.sysStatus != null  and t.sysStatus !=-1 ">
+             and sys_status=#{t.sysStatus} 
+          </if>
+        </where> 
+    </sql>
+   
+   
+    <!-- 查询条件 -->
+    <select id="find" resultType="SysUsers" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" /> 
+        from  sys_users su 
+        <where>
+          1=1 
+            <if test="t.sysUserName != null and t.sysUserName != ''">
+                and sys_user_name like '%${t.sysUserName}%'
+            </if>
+            <if test="t.parentId !=null and t.parentId!='' and t.parentId !=-1 ">
+                 and parent_id in (${t.parentId},${t.sysUserId})
+            </if>
+        </where>
+    </select>
+   
+    <!-- sys_users 列表总数-->
+    <select id="getObjsCount" resultType="java.lang.Integer">
+        select count(1) from sys_users su
+    </select>
+    
+    <!-- sys_users 列表总数-->
+    <select id="getObjsByProsCount" resultType="java.lang.Integer"  parameterType="SysUsers">
+        select count(1) from sys_users su
+        <include refid="select_where_for_one"/>
+    </select>
+   
+    <!-- 插入一个记录 -->
+    <insert id="addOne" parameterType="SysUsers" >
+        insert into sys_users (parent_id,sys_user_name,sys_user_pass,sys_user_sex,sys_user_address,sys_user_phone,sys_user_mail,sys_user_qq,register_time)
+         values 
+         (
+            #{parentId},#{sysUserName},#{sysUserPass},#{sysUserSex},#{sysUserAddress},#{sysUserPhone},#{sysUserMail},#{sysUserQq},now()
+         )
+    </insert>
+    
+    <!-- 根据ID查询(使用时候可能要变化) -->
+    <select id="findById" resultType="SysUsers" parameterType="String">
+        select <include refid="select_columns" /> 
+         from sys_users su where sys_user_id = #{sysUserId}
+    </select>
+    
+    <!-- 删除记录 -->
+    <delete id="deleteById" parameterType="String">
+        delete from sys_users where sys_user_id = #{sysUserId}
+    </delete>
+     
+    <!-- 根据主键修改 -->
+    <update id="updateOne" parameterType="SysUsers" >
+        update sys_users 
+        <set>
+            <if test="parentId != null  and parentId !=-1 ">
+              parent_id=#{parentId}, 
+            </if>
+            <if test="sysUserName != null  and sysUserName != '' ">
+              sys_user_name=#{sysUserName}, 
+            </if>
+            <if test="sysUserPass != null  and sysUserPass != '' ">
+              sys_user_pass=#{sysUserPass}, 
+            </if>
+            <if test="sysUserSex != null  and sysUserSex !=-1 ">
+              sys_user_sex=#{sysUserSex}, 
+            </if>
+            <if test="sysUserAddress != null  and sysUserAddress != '' ">
+              sys_user_address=#{sysUserAddress}, 
+            </if>
+            <if test="sysUserPhone != null  and sysUserPhone != '' ">
+              sys_user_phone=#{sysUserPhone}, 
+            </if>
+            <if test="sysUserMail != null  and sysUserMail != '' ">
+              sys_user_mail=#{sysUserMail}, 
+            </if>
+            <if test="sysUserQq != null  and sysUserQq != '' ">
+              sys_user_qq=#{sysUserQq}, 
+            </if>
+            <if test="registerTime != null  ">
+              register_time=#{registerTime}, 
+            </if>
+            <if test="sysStatus != null  and sysStatus !=-1 ">
+              sys_status=#{sysStatus} 
+            </if>
+        </set> 
+        where sys_user_id = #{sysUserId}
+    </update>
+    
+    <!-- 通过字段名字查询(使用时候,where中的字段-=columnName=-要自己改变.) -->
+    <select id="findByName" resultType="SysUsers" parameterType="String">
+        select  
+        <include refid="select_columns" />  
+        from sys_users su where sys_user_name = #{sysUserName}
+    </select>
+    
+    <!-- 验证用户登陆 -->
+    <select id="countUser" parameterType="SysUsers" resultType="java.lang.Integer">
+        select count(*) from sys_users where 
+        sys_user_name=#{sysUserName} and sys_user_pass=#{sysUserPass}
+    </select>
+        
+   
+    <!-- 通过属性找对象. -->
+    <select id="findByProps" resultType="SysUsers" parameterType="SysUsers">
+        select  
+        <include refid="select_columns" />  
+        from sys_users su 
+        <include refid="select_where_for_one" />  
+    </select>
+       
+       
+   <!-- 查找所有 -->
+   	<select id="findAll" resultType="SysUsers" >
+		select  
+		<include refid="select_columns" />  
+		from  sys_users su 
+	</select>
+          
+   <!-- 查找所有 -->
+    <select id="findAllByPros" resultType="SysUsers" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  sys_users su 
+        <include refid="select_where_for_list"/>      
+    </select>
+	
+	<!-- 插入所有记录 -->
+    <insert id="addAll" parameterType="java.util.List" >
+         insert into sys_users (parent_id,sys_user_name,sys_user_pass,sys_user_sex,sys_user_address,sys_user_phone,sys_user_mail,sys_user_qq,register_time)
+	     values 
+	    <foreach collection="list" item="item" index="index" separator=",">
+	      ( 
+	         #{item.parentId},#{item.sysUserName},#{item.sysUserPass},#{item.sysUserSex},#{item.sysUserAddress},#{item.sysUserPhone},#{item.sysUserMail},#{item.sysUserQq},#{item.registerTime}
+	      )
+	    </foreach>
+    </insert>
+ 
+	<!-- 修改某个属性 updateCloumn 为要修改的列 -->  
+	 <update id="updateAll" parameterType="java.util.HashMap" >
+	  	update sys_users set  updateCloumn = #{updateCloumn} 
+	    where sys_user_id in 
+	    <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	      #{item}
+	    </foreach>
+	 </update>
+
+	<!-- 删除记录 -->
+	<delete id="deleteAll" parameterType="java.util.List" >
+		delete from sys_users where sys_user_id in 
+	   <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	     #{item}
+	   </foreach>
+	</delete>
+ 
+</mapper>   

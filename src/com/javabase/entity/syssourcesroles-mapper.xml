@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="syssourcesroles" > 
+<!-- Result Map-->
+	<!-- 使用时,放开.-->
+	<!-- 以下与实体类的中字段一致 -->
+	<sql id="select_columns">
+	   source_id as sourceId,
+        role_id as roleId
+	</sql>
+   
+    <!-- 查询条件罗列 One -->
+    <sql id="select_where_for_one">
+        <where> 
+          1=1  
+          <if test="roleId != null  and roleId !=-1 ">
+             and role_id=#{roleId} 
+          </if>
+        </where> 
+    </sql>
+   
+     <!-- 查询条件罗列 List-->
+    <sql id="select_where_for_list">
+        <where> 
+          1=1  
+          <if test="t.roleId != null  and t.roleId !=-1 ">
+             and role_id=#{t.roleId} 
+          </if>
+        </where> 
+    </sql>
+   
+	<!-- 根据ID查询(使用时候可能要变化) -->
+	<select id="findById" resultType="SysSourcesRoles" parameterType="String">
+		select <include refid="select_columns" /> 
+    	 from sys_sources_roles where source_id = #{sourceId}
+	</select>
+	
+	
+	<!-- 通过字段名字查询(使用时候,where中的字段-=columnName=-要自己改变.) -->
+    <select id="findByName" resultType="SysSourcesRoles" parameterType="String">
+        select
+        <include refid="select_columns" />
+        from  sys_sources_roles  where columnName = #{columnName}  
+    </select>
+
+
+    <!-- 通过属性找对象. -->
+    <select id="findByProps" resultType="SysSourcesRoles" parameterType="SysSourcesRoles">
+        select  
+        <include refid="select_columns" />  
+        from sys_sources_roles  
+        <include refid="select_where_for_one" />  
+    </select>
+       
+       
+    <!-- 查询条件 -->
+    <select id="find" resultType="SysSourcesRoles" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  sys_sources_roles  
+        <include refid="select_where_for_list"/>      
+    </select>
+       
+       
+   <!-- 查找所有 -->
+   	<select id="findAll" resultType="SysSourcesRoles" >
+		select  
+		<include refid="select_columns" />  
+		from  sys_sources_roles
+	</select>
+   
+          
+   <!-- 查找所有 -->
+    <select id="findAllByPros" resultType="SysSourcesRoles" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  sys_sources_roles  
+        <include refid="select_where_for_list"/>      
+    </select>
+   
+   
+	<!-- 插入一个记录 -->
+	<insert id="addOne" parameterType="SysSourcesRoles" >
+      	insert into sys_sources_roles (role_id)
+	     values 
+	     (
+	        #{roleId}
+	     )
+	</insert>
+	
+	
+	<!-- 插入所有记录 -->
+    <insert id="addAll" parameterType="java.util.List" >
+         insert into sys_sources_roles (role_id)
+	     values 
+	    <foreach collection="list" item="item" index="index" separator=",">
+	      ( 
+	         #{item.roleId}
+	      )
+	    </foreach>
+    </insert>
+ 
+ 
+	<!-- 根据主键修改 -->
+	<update id="updateOne" parameterType="SysSourcesRoles" >
+		update sys_sources_roles 
+    	<set>
+        	<if test="roleId != null  and roleId !=-1 ">
+		      role_id=#{roleId} 
+        	</if>
+    	</set> 
+	    where source_id = #{sourceId}
+	</update>
+	
+	
+	<!-- 修改某个属性 updateCloumn 为要修改的列 -->  
+	 <update id="updateAll" parameterType="java.util.HashMap" >
+	  	update sys_sources_roles set  updateCloumn = #{updateCloumn} 
+	    where source_id in 
+	    <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	      #{item}
+	    </foreach>
+	 </update>
+
+
+	<!-- 删除记录 -->
+	<delete id="deleteById" parameterType="String">
+		delete from sys_sources_roles where source_id = #{sourceId}
+	</delete>
+	
+	
+	<!-- 删除记录 -->
+	<delete id="deleteAll" parameterType="java.util.List" >
+		delete from sys_sources_roles where source_id in 
+	   <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	     #{item}
+	   </foreach>
+	</delete>
+ 
+ 
+	<!-- sys_sources_roles 列表总数-->
+	<select id="getObjsCount" resultType="java.lang.Integer">
+		select count(1) from sys_sources_roles 
+	</select>
+	
+	
+	<!-- sys_sources_roles 列表总数-->
+    <select id="getObjsByProsCount" resultType="java.lang.Integer"  parameterType="SysSourcesRoles">
+        select count(1) from sys_sources_roles 
+        <include refid="select_where_for_one"/>
+    </select>
+	  
+	  	
+</mapper>   

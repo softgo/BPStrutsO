@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="sysserverinfos" > 
+<!-- Result Map-->
+	<!-- 使用时,放开.-->
+	<!-- 以下与实体类的中字段一致 -->
+	<sql id="select_columns">
+	info_id as infoId,
+    cpu_usage as cpuUsage,
+    set_cpu_usage as setCpuUsage,
+    jvm_usage as jvmUsage,
+    set_jvm_usage as setJvmUsage,
+    ram_usage as ramUsage,
+    set_ram_usage as setRamUsage,
+    manager_email as managerEmail,
+    operator_time as operatorTime,
+    mark as mark
+	</sql>
+	
+    <!-- 查询条件罗列 One -->
+    <sql id="select_where_for_one">
+        <where> 
+          1=1  
+          <if test="cpuUsage != null  and cpuUsage != '' ">
+             and cpu_usage=#{cpuUsage} 
+          </if>
+          <if test="setCpuUsage != null  and setCpuUsage != '' ">
+             and set_cpu_usage=#{setCpuUsage} 
+          </if>
+          <if test="jvmUsage != null  and jvmUsage != '' ">
+             and jvm_usage=#{jvmUsage} 
+          </if>
+          <if test="setJvmUsage != null  and setJvmUsage != '' ">
+             and set_jvm_usage=#{setJvmUsage} 
+          </if>
+          <if test="ramUsage != null  and ramUsage != '' ">
+             and ram_usage=#{ramUsage} 
+          </if>
+          <if test="setRamUsage != null  and setRamUsage != '' ">
+             and set_ram_usage=#{setRamUsage} 
+          </if>
+          <if test="managerEmail != null  and managerEmail != '' ">
+             and manager_email=#{managerEmail} 
+          </if>
+          <if test="operatorTime != null  ">
+             and operator_time=#{operatorTime} 
+          </if>
+          <if test="mark != null  and mark != '' ">
+             and mark=#{mark} 
+          </if>
+        </where> 
+    </sql>
+   
+     <!-- 查询条件罗列 List-->
+    <sql id="select_where_for_list">
+        <where> 
+          1=1  
+          <if test="t.cpuUsage != null  and t.cpuUsage != '' ">
+             and cpu_usage=#{t.cpuUsage} 
+          </if>
+          <if test="t.setCpuUsage != null  and t.setCpuUsage != '' ">
+             and set_cpu_usage=#{t.setCpuUsage} 
+          </if>
+          <if test="t.jvmUsage != null  and t.jvmUsage != '' ">
+             and jvm_usage=#{t.jvmUsage} 
+          </if>
+          <if test="t.setJvmUsage != null  and t.setJvmUsage != '' ">
+             and set_jvm_usage=#{t.setJvmUsage} 
+          </if>
+          <if test="t.ramUsage != null  and t.ramUsage != '' ">
+             and ram_usage=#{t.ramUsage} 
+          </if>
+          <if test="t.setRamUsage != null  and t.setRamUsage != '' ">
+             and set_ram_usage=#{t.setRamUsage} 
+          </if>
+          <if test="t.managerEmail != null  and t.managerEmail != '' ">
+             and manager_email=#{t.managerEmail} 
+          </if>
+          <if test="t.operatorTime != null  ">
+             and operator_time=#{t.operatorTime} 
+          </if>
+          <if test="t.mark != null  and t.mark != '' ">
+             and mark=#{t.mark} 
+          </if>
+        </where> 
+    </sql>
+          
+    <!-- 查询条件 -->
+    <select id="find" resultType="SysServerInfos" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  sys_server_infos  
+       <where>
+        <if test="t.managerEmail != null and t.managerEmail != ''">
+            manager_email like '%${t.managerEmail}%'
+        </if>
+        </where>
+        order by operator_time desc
+    </select>
+       
+      <!-- 查找所有 -->
+    <select id="findAll" resultType="SysServerInfos" >
+        select  
+        <include refid="select_columns" /> 
+        from  sys_server_infos  order by operator_time desc
+    </select>        
+          
+    
+    <!-- sys_server_infos 列表总数-->
+    <select id="getObjsCount" resultType="java.lang.Integer">
+        select count(1) from sys_server_infos 
+    </select>
+    
+    
+    <!-- sys_server_infos 列表总数-->
+    <select id="getObjsByProsCount" resultType="java.lang.Integer"  parameterType="SysServerInfos">
+        select count(1) from sys_server_infos  
+        <include refid="select_where_for_one"/>
+    </select>
+    
+    <!-- 插入一个记录 -->
+    <insert id="addOne" parameterType="SysServerInfos" >
+        insert into sys_server_infos (cpu_usage,set_cpu_usage,jvm_usage,set_jvm_usage,ram_usage,set_ram_usage,manager_email,operator_time,mark)
+         values  
+         (
+            #{cpuUsage},#{setCpuUsage},#{jvmUsage},#{setJvmUsage},#{ramUsage},#{setRamUsage},#{managerEmail},now(),#{mark}
+         )
+    </insert>
+   
+    <!-- 根据ID查询(使用时候可能要变化) -->
+    <select id="findById" resultType="SysServerInfos" parameterType="String">
+        select <include refid="select_columns" /> 
+         from sys_server_infos where info_id = #{infoId}
+    </select>    
+    
+    <!-- 删除记录 -->
+    <delete id="deleteById" parameterType="String">
+        delete from sys_server_infos where info_id = #{infoId}
+    </delete>
+    
+	<!-- 通过字段名字查询(使用时候,where中的字段-=columnName=-要自己改变.) -->
+    <select id="findByName" resultType="SysServerInfos" parameterType="String">
+        select  
+        <include refid="select_columns" />  
+        from  sys_server_infos  where columnName = #{columnName}  
+    </select>
+
+
+    <!-- 通过属性找对象. -->
+    <select id="findByProps" resultType="SysServerInfos" parameterType="SysServerInfos">
+        select  
+        <include refid="select_columns" />  
+        from sys_server_infos  
+        <include refid="select_where_for_one" />  
+    </select>
+       
+
+       
+   <!-- 查找所有 -->
+    <select id="findAllByPros" resultType="SysServerInfos" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" /> 
+        from  sys_server_infos  
+        <include refid="select_where_for_list" />  
+        
+    </select> 
+
+	
+	<!-- 插入所有记录 -->
+    <insert id="addAll" parameterType="java.util.List" >
+         insert into sys_server_infos (cpu_usage,set_cpu_usage,jvm_usage,set_jvm_usage,ram_usage,set_ram_usage,manager_email,operator_time,mark)
+	     values  
+	    <foreach collection="list" item="item" index="index" separator=",">
+	      ( 
+	         #{item.cpuUsage},#{item.setCpuUsage},#{item.jvmUsage},#{item.setJvmUsage},#{item.ramUsage},#{item.setRamUsage},#{item.managerEmail},#{item.operatorTime},#{item.mark}
+	      )
+	    </foreach>
+    </insert>
+ 
+ 
+	<!-- 根据主键修改 -->
+	<update id="updateOne" parameterType="SysServerInfos" >
+		update sys_server_infos 
+    	<set>
+        	<if test="cpuUsage != null  and cpuUsage != '' ">
+		      cpu_usage=#{cpuUsage}, 
+        	</if>
+        	<if test="setCpuUsage != null  and setCpuUsage != '' ">
+		      set_cpu_usage=#{setCpuUsage}, 
+        	</if>
+        	<if test="jvmUsage != null  and jvmUsage != '' ">
+		      jvm_usage=#{jvmUsage}, 
+        	</if>
+        	<if test="setJvmUsage != null  and setJvmUsage != '' ">
+		      set_jvm_usage=#{setJvmUsage}, 
+        	</if>
+        	<if test="ramUsage != null  and ramUsage != '' ">
+		      ram_usage=#{ramUsage}, 
+        	</if>
+        	<if test="setRamUsage != null  and setRamUsage != '' ">
+		      set_ram_usage=#{setRamUsage}, 
+        	</if>
+        	<if test="managerEmail != null  and managerEmail != '' ">
+		      manager_email=#{managerEmail}, 
+        	</if>
+        	<if test="operatorTime != null  ">
+		      operator_time= now() , 
+        	</if>
+        	<if test="mark != null  and mark != '' ">
+		      mark=#{mark} 
+        	</if>
+    	</set> 
+	    where info_id = #{infoId}
+	</update>
+	
+	<!-- 修改某个属性 updateCloumn 为要修改的列 -->  
+	 <update id="updateAll" parameterType="java.util.HashMap" >
+	  	update sys_server_infos set  updateCloumn = #{updateCloumn} 
+	    where info_id in 
+	    <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	      #{item}
+	    </foreach>
+	 </update>
+	
+	<!-- 删除记录 -->
+	<delete id="deleteAll" parameterType="java.util.List" >
+		delete from sys_server_infos where info_id in 
+	   <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	     #{item}
+	   </foreach>
+	</delete>
+ 
+</mapper>   

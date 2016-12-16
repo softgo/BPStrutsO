@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="loginlogs" > 
+<!-- Result Map-->
+	<!-- 使用时,放开.-->
+	<!-- 以下与实体类的中字段一致 -->
+	<sql id="select_columns">
+	login_id as loginId,
+    sys_user_id as sysUserId,
+    sys_user_name as sysUserName,
+    login_time as loginTime,
+    login_ip as loginIp,
+    login_status as loginStatus
+	</sql>
+   
+   <!-- 查询条件罗列 One -->
+    <sql id="select_where_for_one">
+        <where> 
+          1=1  
+          <if test="sysUserId != null  and sysUserId !=-1 ">
+             and sys_user_id=#{sysUserId} 
+          </if>
+          <if test="sysUserName != null  and sysUserName != '' ">
+             and sys_user_name=#{sysUserName} 
+          </if>
+          <if test="loginTime != null  ">
+             and login_time=#{loginTime} 
+          </if>
+          <if test="loginIp != null  and loginIp != '' ">
+             and login_ip=#{loginIp} 
+          </if>
+          <if test="loginStatus != null  and loginStatus !=-1 ">
+             and login_status=#{loginStatus} 
+          </if>
+        </where> 
+    </sql>
+   
+     <!-- 查询条件罗列 List-->
+    <sql id="select_where_for_list">
+        <where> 
+          1=1  
+          <if test="t.sysUserId != null  and t.sysUserId !=-1 ">
+             and sys_user_id=#{t.sysUserId} 
+          </if>
+          <if test="t.sysUserName != null  and t.sysUserName != '' ">
+             and sys_user_name=#{t.sysUserName} 
+          </if>
+          <if test="t.loginTime != null  ">
+             and login_time=#{t.loginTime} 
+          </if>
+          <if test="t.loginIp != null  and t.loginIp != '' ">
+             and login_ip=#{t.loginIp} 
+          </if>
+          <if test="t.loginStatus != null  and t.loginStatus !=-1 ">
+             and login_status=#{t.loginStatus} 
+          </if>
+        </where> 
+    </sql>
+   
+    <!-- 查询条件 -->
+    <select id="find" resultType="LoginLogs" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  login_logs  
+        <include refid="select_where_for_list"/>      
+    </select>
+       
+    <!-- 插入一个记录 -->
+    <insert id="addOne" parameterType="LoginLogs" >
+        insert into login_logs (sys_user_id,sys_user_name,login_ip)
+         values 
+         (
+            #{sysUserId},#{sysUserName},#{loginIp}
+         )
+    </insert>
+   
+	<!-- 根据ID查询(使用时候可能要变化) -->
+	<select id="findById" resultType="LoginLogs" parameterType="String">
+		select <include refid="select_columns" /> 
+    	 from login_logs where login_id = #{loginId} 
+	</select>
+	
+	
+	<!-- 通过字段名字查询(使用时候,where中的字段-=columnName=-要自己改变.) -->
+    <select id="findByName" resultType="LoginLogs" parameterType="String">
+        select  
+        <include refid="select_columns" />  
+        from  login_logs  where sys_user_name = #{columnName}  
+    </select>
+
+
+    <!-- 通过属性找对象. -->
+    <select id="findByProps" resultType="LoginLogs" parameterType="LoginLogs">
+        select  
+        <include refid="select_columns" />  
+        from login_logs  
+        <include refid="select_where_for_one" />  
+    </select>
+       
+       
+   <!-- 查找所有 -->
+   	<select id="findAll" resultType="LoginLogs" >
+		select  
+		<include refid="select_columns" />  
+		from  login_logs
+	</select>
+   
+    <!-- 查找所有 -->
+    <select id="findAllByPros" resultType="LoginLogs" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />
+        from  login_logs  
+        <include refid="select_where_for_list"/>      
+    </select> 
+	
+	<!-- 插入所有记录 -->
+    <insert id="addAll" parameterType="java.util.List" >
+         insert into login_logs (sys_user_id,sys_user_name,login_time,login_ip,login_status)
+	     values 
+	    <foreach collection="list" item="item" index="index" separator=",">
+	      ( 
+	         #{item.sysUserId},#{item.sysUserName},#{item.loginTime},#{item.loginIp},#{item.loginStatus}
+	      )
+	    </foreach>
+    </insert>
+ 
+ 
+	<!-- 根据主键修改 -->
+	<update id="updateOne" parameterType="LoginLogs" >
+		update login_logs 
+    	<set>
+        	<if test="sysUserId != null  and sysUserId !=-1 ">
+		      sys_user_id=#{sysUserId}, 
+        	</if>
+        	<if test="sysUserName != null  and sysUserName != '' ">
+		      sys_user_name=#{sysUserName}, 
+        	</if>
+        	<if test="loginTime != null  ">
+		      login_time=now(), 
+        	</if>
+        	<if test="loginIp != null  and loginIp != '' ">
+		      login_ip=#{loginIp}, 
+        	</if>
+        	<if test="loginStatus != null  and loginStatus !=-1 ">
+		      login_status=#{loginStatus} 
+        	</if>
+    	</set> 
+	    where login_id = #{loginId}
+	</update>
+	
+	
+	<!-- 修改某个属性 updateCloumn 为要修改的列 -->  
+	 <update id="updateAll" parameterType="java.util.HashMap" >
+	  	update login_logs set  updateCloumn = #{updateCloumn} 
+	    where login_id in 
+	    <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	      #{item}
+	    </foreach>
+	 </update>
+
+
+	<!-- 删除记录 -->
+	<delete id="deleteById" parameterType="String">
+		delete from login_logs where login_id = #{loginId}
+	</delete>
+	
+	
+	<!-- 删除记录 -->
+	<delete id="deleteAll" parameterType="java.util.List" >
+		delete from login_logs where login_id in 
+	   <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	     #{item}
+	   </foreach>
+	</delete>
+ 
+ 
+	<!-- login_logs 列表总数-->
+	<select id="getObjsCount" resultType="java.lang.Integer">
+		select count(1) from login_logs 
+	</select>
+	
+	
+	<!-- login_logs 列表总数-->
+    <select id="getObjsByProsCount" resultType="java.lang.Integer"  parameterType="LoginLogs">
+        select count(1) from login_logs 
+        <include refid="select_where_for_one"/>
+    </select>
+	  
+	  	
+</mapper>   

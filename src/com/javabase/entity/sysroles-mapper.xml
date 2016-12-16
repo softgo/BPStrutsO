@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="sysroles" > 
+<!-- Result Map-->
+	<!-- 使用时,放开.-->
+	<!-- 以下与实体类的中字段一致 -->
+	<sql id="select_columns">
+	role_id as roleId,
+    parent_id as parentId,
+    role_name as roleName,
+    role_key as roleKey,
+    description as description,
+    role_status as roleStatus
+     
+	</sql>
+   
+    <!-- 查询条件罗列 One -->
+    <sql id="select_where_for_one">
+        <where> 
+          1=1  
+          <if test="parentId != null  and parentId !=-1 ">
+             and parent_id=#{parentId} 
+          </if>
+          <if test="roleName != null  and roleName != '' ">
+             and role_name=#{roleName} 
+          </if>
+          <if test="roleKey != null  and roleKey != '' ">
+             and role_key=#{roleKey} 
+          </if>
+          <if test="description != null  and description != '' ">
+             and description=#{description} 
+          </if>
+          <if test="roleStatus != null  and roleStatus !=-1 ">
+             and role_status=#{roleStatus} 
+          </if>
+        </where> 
+    </sql>
+   
+     <!-- 查询条件罗列 List-->
+    <sql id="select_where_for_list">
+        <where> 
+          1=1  
+          <if test="t.parentId != null  and t.parentId !=-1 ">
+             and parent_id=#{t.parentId} 
+          </if>
+          <if test="t.roleName != null  and t.roleName != '' ">
+             and role_name=#{t.roleName} 
+          </if>
+          <if test="t.roleKey != null  and t.roleKey != '' ">
+             and role_key=#{t.roleKey} 
+          </if>
+          <if test="t.description != null  and t.description != '' ">
+             and description=#{t.description} 
+          </if>
+          <if test="t.roleStatus != null  and t.roleStatus !=-1 ">
+             and role_status=#{t.roleStatus} 
+          </if>
+        </where> 
+    </sql>
+   
+   
+    <!-- 查询条件 -->
+    <select id="find" resultType="SysRoles" parameterType="java.util.HashMap">
+        select
+        <include refid="select_columns" />
+        from  sys_roles  
+        <where>
+              1=1 
+            <if test="t.roleName != null and t.roleName != ''">
+                and role_name like '%${t.roleName}%'
+            </if>
+            <if test="t.parentId !=null and t.parentId !='' and t.parentId !=-1 ">
+                and parent_id in (${t.parentId},${t.roleId})
+            </if>
+             <if test="t.roleStatus !=null and t.roleStatus !='' and t.roleStatus != 0 ">
+                and role_status = #{t.roleStatus} 
+            </if>
+        </where> 
+    </select>
+    
+    <!-- 通过字段名字查询(使用时候,where中的字段-=columnName=-要自己改变.) -->
+    <select id="findByName" resultType="SysRoles" parameterType="String">
+        select  
+        <include refid="select_columns" />  
+        from  sys_roles  where role_name = #{columnName}  
+    </select>
+   
+   <!-- 查找所有 -->
+    <select id="findAll" resultType="SysRoles">
+        select  
+        <include refid="select_columns" />  
+        from  sys_roles  
+    </select>
+   
+    <!-- sys_roles 列表总数-->
+    <select id="getObjsCount" resultType="java.lang.Integer">
+        select count(1) from sys_roles 
+    </select>
+    
+    <!-- sys_roles 列表总数-->
+    <select id="getObjsByProsCount" resultType="java.lang.Integer"  parameterType="SysRoles">
+        select count(1) from sys_roles 
+        <include refid="select_where_for_one"/>
+    </select>
+          
+    <!-- 插入一个记录 -->
+    <insert id="addOne" parameterType="SysRoles" >
+        insert into sys_roles (parent_id,role_name,role_key,description,role_status)
+         values  
+         (
+            #{parentId},#{roleName},#{roleKey},#{description},#{roleStatus}
+         )
+    </insert>
+    
+    <!-- 删除记录 -->
+    <delete id="deleteById" parameterType="String">
+        delete from sys_roles where role_id = #{roleId}
+    </delete>
+    
+    <!-- 根据ID查询(使用时候可能要变化) -->
+    <select id="findById" resultType="SysRoles" parameterType="String">
+        select <include refid="select_columns" /> 
+         from sys_roles where role_id = #{roleId}
+    </select>
+    
+   <!-- 根据主键修改 -->
+    <update id="updateOne" parameterType="SysRoles" >
+        update sys_roles 
+        <set>
+            <if test="parentId != null  and parentId !=-1 ">
+              parent_id=#{parentId}, 
+            </if>
+            <if test="roleName != null  and roleName != '' ">
+              role_name=#{roleName}, 
+            </if>
+            <if test="roleKey != null  and roleKey != '' ">
+              role_key=#{roleKey}, 
+            </if>
+            <if test="description != null  and description != '' ">
+              description=#{description}, 
+            </if>
+            <if test="roleStatus != null  and roleStatus !=-1 ">
+              role_status=#{roleStatus} 
+            </if>
+        </set> 
+        where role_id = #{roleId}
+    </update>
+    
+     <select id="findByUserRoles" parameterType="String" resultType="SysRoles">
+        select  
+        <include refid="select_columns" />  
+        from sys_roles where role_id  in  
+        (select role_id from sys_users_roles where sys_user_id=#{sys_user_id})
+    </select>
+    
+       <!-- 增加角色和用户 -->
+    <insert id="saveUsersRoles" parameterType="SysUsersRoles">
+        insert into sys_users_roles
+        (sys_user_id,role_id) values (#{sysUserId},#{roleId})
+    </insert>
+   
+    <delete id="deleteUsersRoles" parameterType="String">
+        delete from sys_users_roles
+        where sys_user_id=#{sysUserId}
+    </delete>
+ 
+ 
+ 
+    <!-- 通过属性找对象. -->
+    <select id="findByProps" resultType="SysRoles" parameterType="SysRoles">
+        select  
+        <include refid="select_columns" />  
+        from sys_roles  
+        <include refid="select_where_for_one" />  
+    </select>
+          
+   <!-- 查找所有 -->
+    <select id="findAllByPros" resultType="SysRoles" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  sys_roles  
+        <include refid="select_where_for_list" />  
+    </select>
+	
+	<!-- 插入所有记录 -->
+    <insert id="addAll" parameterType="java.util.List" >
+         insert into sys_roles (parent_id,role_name,role_key,description,role_status)
+	     values  
+	    <foreach collection="list" item="item" index="index" separator=",">
+	      ( 
+	         #{item.parentId},#{item.roleName},#{item.roleKey},#{item.description},#{item.roleStatus}
+	      )
+	    </foreach>
+    </insert>
+ 
+	<!-- 修改某个属性 updateCloumn 为要修改的列 -->  
+	 <update id="updateAll" parameterType="java.util.HashMap" >
+	  	update sys_roles set  updateCloumn = #{updateCloumn} 
+	    where role_id in 
+	    <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	      #{item}
+	    </foreach>
+	 </update>
+
+	<!-- 删除记录 -->
+	<delete id="deleteAll" parameterType="java.util.List" >
+		delete from sys_roles where role_id in 
+	   <foreach collection="list" item="item" index="index" open="(" separator="," close=")" >
+	     #{item}
+	   </foreach>
+	</delete>
+ 	  	
+</mapper>   

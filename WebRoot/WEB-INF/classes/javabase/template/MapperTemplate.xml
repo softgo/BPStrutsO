@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="${nameSpaceName}" > 
+<!-- Result Map-->
+	<!-- 使用时,放开.-->
+	<!-- 以下与实体类的中字段一致 -->
+	<sql id="select_columns">
+		 $!{SQL.columnFields} 
+	</sql>
+   
+    <!-- 查询条件罗列 One -->
+	<sql id="select_where_for_one">
+		$!{SQL.selectOptsOne} 
+	</sql>
+   
+     <!-- 查询条件罗列 List-->
+    <sql id="select_where_for_list">
+        $!{SQL.selectOptsList} 
+    </sql>
+   
+	<!-- 根据ID查询(使用时候可能要变化) -->
+	<select id="findById" resultType="${className}" parameterType="String">
+		select  
+		<include refid="select_columns" />  
+		from  ${tableName}  where  $!{SQL.findById} 
+	</select>
+	
+	
+	<!-- 通过字段名字查询(使用时候,where中的字段-=columnName=-要自己改变.) -->
+    <select id="findByName" resultType="${className}" parameterType="String">
+        select  
+        <include refid="select_columns" />  
+        from  ${tableName}  where columnName = #{columnName}  
+    </select>
+
+
+    <!-- 通过属性找对象. -->
+    <select id="findByProps" resultType="${className}" parameterType="${className}">
+        select  
+        <include refid="select_columns" />  
+        from ${tableName}  
+        <include refid="select_where_for_one" />  
+    </select>
+       
+       
+    <!-- 查询条件 -->
+    <select id="find" resultType="${className}" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  ${tableName}  
+        <include refid="select_where_for_list"/>      
+    </select>
+       
+       
+   <!-- 查找所有 -->
+   	<select id="findAll" resultType="${className}" >
+		select  
+		<include refid="select_columns" />  
+		from  ${tableName}  
+	</select>
+   
+      <!-- 查找所有 -->
+    <select id="findAllByPros" resultType="${className}" parameterType="java.util.HashMap">
+        select  
+        <include refid="select_columns" />  
+        from  ${tableName}  
+        <include refid="select_where_for_list" />  
+    </select>
+   
+	<!-- 插入一个记录 -->
+	<insert id="addOne" parameterType="${className}" >
+      	$!{SQL.insertOne}  
+	</insert>
+	
+	
+	<!-- 插入所有记录 -->
+    <insert id="addAll" parameterType="java.util.List" >
+        $!{SQL.insertAll}  
+    </insert>
+ 
+ 
+	<!-- 根据主键修改 -->
+	<update id="updateOne" parameterType="${className}" >
+		$!{SQL.updateOne}  
+	</update>
+	
+	
+	<!-- 修改某个属性 updateCloumn 为要修改的列 -->  
+	 <update id="updateAll" parameterType="java.util.HashMap" >
+	  	$!{SQL.updateAll}  
+	 </update>
+
+
+	<!-- 删除记录 -->
+	<delete id="deleteById" parameterType="String">
+		$!{SQL.deleteById}  
+	</delete>
+	
+	
+	<!-- 删除记录 -->
+	<delete id="deleteAll" parameterType="java.util.List" >
+		$!{SQL.deleteAll}  
+	</delete>
+ 
+ 
+	<!-- ${codeName} 列表总数-->
+	<select id="getObjsCount" resultType="java.lang.Integer">
+		select count(1) from ${tableName}  
+	</select>
+	
+	
+	<!-- ${codeName} 列表总数-->
+    <select id="getObjsByProsCount" resultType="java.lang.Integer"  parameterType="${className}">
+        select count(1) from ${tableName}  
+        <include refid="select_where_for_one"/>
+    </select>
+	  
+	  	
+</mapper>   

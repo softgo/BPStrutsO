@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>头像上传form提交</title>
+    <meta charset="UTF-8" http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name=”viewport” content=”width=device-width, initial-scale=1, maximum-scale=1″>
+    <link rel="stylesheet" href="css/main.css" type="text/css" />
+</head>
+
+<div class="nav"><div class="title">头像上传</div></div>
+<body class="mainbg">
+<div class="myname">
+<div class="item">
+
+<!--
+  http://developer.qiniu.com/docs/v6/api/overview/up/form-upload.html
+ -->
+ 
+<form method="post" action="http://upload.qiniu.com/" enctype="multipart/form-data">
+  <input name="token" type="hidden" value="上传的token">
+  <input name="file" type="file" />
+   <input type="submit" value="submit"/>
+</form>
+
+</div>
+</div>
+</body>
+</html>

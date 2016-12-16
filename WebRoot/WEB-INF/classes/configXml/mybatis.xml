@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+	"http://www.mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<typeAliases>
+	
+		<!-- 系统实体Bean一个别名-->
+		<typeAlias type="com.javabase.entity.LoginLogs" alias="LoginLogs" />
+		<typeAlias type="com.javabase.entity.SysLogs" alias="SysLogs"/>
+		<typeAlias type="com.javabase.entity.SysRoles" alias="SysRoles"/>
+		<typeAlias type="com.javabase.entity.SysSources" alias="SysSources"/>
+		<typeAlias type="com.javabase.entity.SysSourcesRoles" alias="SysSourcesRoles"/>
+		<typeAlias type="com.javabase.entity.SysUsers" alias="SysUsers"/>
+		<typeAlias type="com.javabase.entity.SysUsersRoles" alias="SysUsersRoles" />
+        <typeAlias type="com.javabase.entity.SysServerInfos" alias="SysServerInfos" />
+        
+	</typeAliases>
+	
+</configuration>

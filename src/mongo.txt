@@ -1,0 +1,10 @@
+MonGo 自动生成代码和页面的方式
+
+一、注意点:
+1. 在 com.javabase.mongo.MonGoSettingManager.java 类中将 mongoDBName 这个注解添加上去值,标注是操作哪个  mongo 库 .
+       如果有多个的 mongo 库,那么像 MonGoSettingManager 这样的标注文件会有多个.
+        
+2.xxx.xxx.entity 下的实体对象类,字段的类型需要根据 mongo 库中的实际 collections 情况来定,工具生成的类的字段的类型都是
+        统一使用的是String标注,需要在生成完成了之后,按照实际的去手动改变下(这个后期有时间会去改动这块的实现).
+        
+3.对应类的文件夹下, add.jsp, edit.jsp, list.jsp 中都有相应的验证和查询条件,需要根据实际的情况去改变...
