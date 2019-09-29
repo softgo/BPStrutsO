@@ -250,29 +250,5 @@ public class JavaMailUtil {
 		}
 	}
 	
-	/**
-	 * 邮件测试(邮件在测试的时候,一定要有测试的服务器,要是没有对应的邮件服务器,那么测试是不会成功的！)
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		//方式一
-		List<String> list = new ArrayList<String>();
-		list.add("suping@topwalk.com");
-		list.add("supingemail@126.com");
-		String[] lists = (String[]) list.toArray(new String[0]);
-		
-		//方式二
-		String[] persons=new String[]{"suping@topwalk.com"};
-		
-		
-		String context="主题是：天行网安邮件测试系统,用来测试邮件的性能是不是完好使用！";
-		//不带附件的
-		sendMailOutA("mail.topwalk.com", "suping@topwalk.com", "suping123", "25", "suping@topwalk.com","suping123", lists , 0, "邮件名称：测试", context);
-		
-		//带附件的
-		String enclosure="F:\\country.xml";
-		String[] enclosures=new String[]{enclosure};
-		sendMailAffixA("mail.topwalk.com", "suping@topwalk.com", "suping123", "25", "suping@topwalk.com","suping123", lists , 0, "邮件名称：测试", enclosures, context);
-		
-	}
+	
 }
